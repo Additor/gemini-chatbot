@@ -23,17 +23,17 @@ async function UserOrLogin() {
     <>
       {session?.user ? (
         <>
-          <SidebarMobile>
+          {/* <SidebarMobile>
             <ChatHistory userId={session.user.id} />
           </SidebarMobile>
-          <SidebarToggle />
+          <SidebarToggle /> */}
         </>
       ) : (
         <Link href="/new" rel="nofollow">
           <img className="size-6" src="/images/gemini.png" alt="gemini logo" />
         </Link>
       )}
-      <div className="flex items-center">
+      {/* <div className="flex items-center">
         <IconSeparator className="size-6 text-zinc-200" />
         {session?.user ? (
           <UserMenu user={session.user} />
@@ -42,7 +42,7 @@ async function UserOrLogin() {
             <Link href="/login">Login</Link>
           </Button>
         )}
-      </div>
+      </div> */}
     </>
   )
 }
@@ -55,7 +55,7 @@ export function Header() {
           <UserOrLogin />
         </React.Suspense>
       </div>
-      <div className="flex items-center justify-end gap-2">
+      {/* <div className="flex items-center justify-end gap-2">
         <Button asChild size="sm" variant="ghost">
           <a
             target="_blank"
@@ -76,7 +76,7 @@ export function Header() {
             <span className="sm:hidden">Deploy</span>
           </a>
         </Button>
-      </div>
+      </div> */}
     </header>
   )
 }
