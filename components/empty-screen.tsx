@@ -1,101 +1,265 @@
-import { ExternalLink } from '@/components/external-link'
-import remarkGfm from 'remark-gfm'
-import remarkMath from 'remark-math'
-import { MemoizedReactMarkdown } from './markdown'
-import { CodeBlock } from './ui/codeblock'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
+import { IconChevronDown } from '@tabler/icons-react'
+import { Children } from 'react'
+
+const TextLengths = {
+  Simple: 'Simple',
+  Moderate: 'Moderate',
+  Detailed: 'Detailed'
+} as const
+
+type TextLength = keyof typeof TextLengths
+
+const Tones = {
+  Professional: 'Professional',
+  Formal: 'Formal',
+  Confident: 'Confident',
+  Innovative: 'Innovative',
+  Analytical: 'Analytical',
+  Technical: 'Technical',
+  Optimistic: 'Optimistic',
+  Friendly: 'Friendly',
+  'Problem-Solving': 'Problem-Solving',
+  Trustworthy: 'Trustworthy',
+  Ambitiou: 'Ambitious'
+} as const
+
+type Tone = keyof typeof Tones
+
+const ProposalEvaluationCategories = {
+  Background: 'Background',
+  Goal: 'Goal',
+  Specificity: 'Specificity',
+  Expertise: 'Expertise',
+  Differentiation: 'Differentiation',
+  Readability: 'Readability'
+} as const
+
+type ProposalEvaluationCategory = keyof typeof ProposalEvaluationCategories
+
+type ProposalEvaluationData = {
+  shouldImprove: boolean
+  score: number
+  description: string
+}
+
+type ProposalEvaluation = {
+  overallScore: number
+  data: Record<ProposalEvaluationCategory, ProposalEvaluationData>
+}
+
+const dummyProposalEvaluation: ProposalEvaluation = {
+  overallScore: 3.5,
+  data: {
+    Background: {
+      shouldImprove: false,
+      score: 3,
+      description: "you need to add more context about your client's goal."
+    },
+    Goal: {
+      shouldImprove: false,
+      score: 4,
+      description: 'Goals clear, but success criteria could be more detailed.'
+    },
+    Specificity: {
+      shouldImprove: false,
+      score: 3,
+      description: 'Specific but lacks some innovative approaches.'
+    },
+    Expertise: {
+      shouldImprove: false,
+      score: 2,
+      description: 'Expertise in UX/UI shown, broader skills not demonstrated.'
+    },
+    Differentiation: {
+      shouldImprove: false,
+      score: 2,
+      description: 'Lacks unique offerings beyond basic improvements.'
+    },
+    Readability: {
+      shouldImprove: false,
+      score: 3,
+      description: 'Adequate detail but misses strategic depth.'
+    }
+  }
+}
+
+function getOverallScoreLabel(overallScore: number): string {
+  if (overallScore >= 4) {
+    return 'Good'
+  }
+
+  if (overallScore >= 3) {
+    return 'Moderate'
+  }
+
+  return 'Bad'
+}
 
 export function EmptyScreen() {
-  const sample = `## Features
+  const tableData = Object.entries(dummyProposalEvaluation.data)
+  const isAllChecked = tableData.every(([, { shouldImprove }]) => shouldImprove)
 
-- [Next.js](https://nextjs.org) App Router
-- React Server Components (RSCs), Suspense, and Server Actions
-- [Vercel AI SDK](https://sdk.vercel.ai/docs) for streaming chat UI
-- Support for Google Gemini (default), OpenAI, Anthropic, Cohere, Hugging Face, or custom AI chat models and/or LangChain
-- [shadcn/ui](https://ui.shadcn.com)
-  - Styling with [Tailwind CSS](https://tailwindcss.com)
-  - [Radix UI](https://radix-ui.com) for headless component primitives
-  - Icons from [Phosphor Icons](https://phosphoricons.com)
-- Chat History, rate limiting, and session storage with [Vercel KV](https://vercel.com/storage/kv)
-- [NextAuth.js](https://github.com/nextauthjs/next-auth) for authentication
+  const handleCheckAllCategory = (): void => {
+    // TODO: check update all
+  }
 
-## Model Providers
-
-This template ships with Google Gemini ${`models/gemini-1.0-pro-001`} as the default. However, thanks to the [Vercel AI SDK](https://sdk.vercel.ai/docs), you can switch LLM providers to [OpenAI](https://openai.com), [Anthropic](https://anthropic.com), [Cohere](https://cohere.com/), [Hugging Face](https://huggingface.co), or using [LangChain](https://js.langchain.com) with just a few lines of code.
-
-## Deploy Your Own
-
-You can deploy your own version of the Next.js AI Chatbot to Vercel with one click:
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?demo-title=Next.js+Chat&demo-description=A+full-featured%2C+hackable+Next.js+AI+chatbot+built+by+Vercel+Labs&demo-url=https%3A%2F%2Fchat.vercel.ai%2F&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F4aVPvWuTmBvzM5cEdRdqeW%2F4234f9baf160f68ffb385a43c3527645%2FCleanShot_2023-06-16_at_17.09.21.png&project-name=Next.js+Chat&repository-name=nextjs-chat&repository-url=https%3A%2F%2Fgithub.com%2Fvercel-labs%2Fgemini-chatbot&from=templates&skippable-integrations=1&env=GOOGLE_GENERATIVE_AI_API_KEY%2CAUTH_SECRET&envDescription=How+to+get+these+env+vars&envLink=https%3A%2F%2Fgithub.com%2Fvercel-labs%2Fgemini-chatbot%2Fblob%2Fmain%2F.env.example&teamCreateStatus=hidden&stores=[{%22type%22:%22kv%22}])
-
-## Running locally
-
-You will need to use the environment variables [defined in ${`.env.example`}](.env.example) to run Next.js AI Chatbot. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/projects/environment-variables) for this, but a ${`.env`} file is all that is necessary.
-
-> Note: You should not commit your ${`.env`} file or it will expose secrets that will allow others to control access to your various Google Cloud and authentication provider accounts.
-
-1. Install Vercel CLI: ${`npm i -g vercel`}
-2. Link local instance with Vercel and GitHub accounts (creates ${`.vercel`} directory): ${`vercel link`}
-3. Download your environment variables: ${`vercel env pull`}
-
-Your app template should now be running on [localhost:3000](http://localhost:3000/).
-
-## Authors
-
-This library is created by [Vercel](https://vercel.com) and [Next.js](https://nextjs.org) team members, with contributions from:
-
-- Jared Palmer ([@jaredpalmer](https://twitter.com/jaredpalmer)) - [Vercel](https://vercel.com)
-- Shu Ding ([@shuding\_](https://twitter.com/shuding_)) - [Vercel](https://vercel.com)
-- shadcn ([@shadcn](https://twitter.com/shadcn)) - [Vercel](https://vercel.com)
-- Jeremy Philemon ([@jrmyphlmn](https://twitter.com/jrmyphlmn)) - [Vercel](https://vercel.com)`
+  const handleCheckCategoryItem = (): void => {
+    // TODO: check update item
+  }
 
   return (
     <div className="mx-auto max-w-2xl px-4">
       <div className="flex flex-col gap-2 rounded-2xl bg-zinc-50 sm:p-8 p-4 text-sm sm:text-base">
-        <h1 className="text-2xl sm:text-3xl tracking-tight font-semibold max-w-fit inline-block">
-          Markdown Render
-        </h1>
-        <MemoizedReactMarkdown
-          className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
-          remarkPlugins={[remarkGfm, remarkMath]}
-          components={{
-            p({ children }) {
-              return <p className="mb-2 last:mb-0">{children}</p>
-            },
-            code({ node, inline, className, children, ...props }) {
-              if (children.length) {
-                if (children[0] == '▍') {
-                  return (
-                    <span className="mt-1 animate-pulse cursor-default">▍</span>
-                  )
-                }
-
-                children[0] = (children[0] as string).replace('`▍`', '▍')
-              }
-
-              const match = /language-(\w+)/.exec(className || '')
-
-              if (inline) {
-                return (
-                  <code className={className} {...props}>
-                    {children}
-                  </code>
-                )
-              }
-
-              return (
-                <CodeBlock
-                  key={Math.random()}
-                  language={(match && match[1]) || ''}
-                  value={String(children).replace(/\n$/, '')}
-                  {...props}
+        <h6>Overall score</h6>
+        <div className="flex gap-4">
+          <h1 className="text-2xl sm:text-3xl tracking-tight font-semibold max-w-fit inline-block">
+            {dummyProposalEvaluation.overallScore} / 5
+          </h1>
+          <Badge variant="secondary">
+            {getOverallScoreLabel(dummyProposalEvaluation.overallScore)}
+          </Badge>
+        </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[46px]">
+                <Checkbox
+                  checked={isAllChecked}
+                  onChange={handleCheckAllCategory}
                 />
+              </TableHead>
+              <TableHead className="w-[90px]">Category</TableHead>
+              <TableHead className="w-[60px]">Score</TableHead>
+              <TableHead>Amount</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Children.toArray(
+              tableData.map(
+                ([category, { score, description, shouldImprove }]) => (
+                  <TableRow>
+                    <TableCell>
+                      <Checkbox
+                        checked={shouldImprove}
+                        onChange={handleCheckCategoryItem}
+                      />
+                    </TableCell>
+                    <TableCell className="font-medium">{category}</TableCell>
+                    <TableCell className="font-medium">{score} / 5</TableCell>
+                    <TableCell>{description}</TableCell>
+                  </TableRow>
+                )
               )
-            }
-          }}
-        >
-          {sample}
-        </MemoizedReactMarkdown>
+            )}
+          </TableBody>
+        </Table>
+        <div className="flex gap-3 mt-2">
+          <Button>✨ Improve my proposal</Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline">Settings</Button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="start"
+              side="top"
+              sideOffset={8}
+              className="w-96"
+            >
+              <div className="grid gap-4">
+                <div className="space-y-2">
+                  <h4 className="font-medium leading-none">Settings</h4>
+                  <p className="text-sm text-muted-foreground">
+                    to create the improved proposal content
+                  </p>
+                </div>
+                <div className="grid gap-2">
+                  <div className="grid grid-cols-2 items-center gap-4">
+                    <Label htmlFor="width" className="w-20">
+                      Text Length
+                    </Label>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-between"
+                        >
+                          {TextLengths.Moderate}
+                          <IconChevronDown size={20} color="#71717A" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        <DropdownMenuItem className="flex-col items-start">
+                          <p>{TextLengths.Simple}</p>
+                          <p className="text-xs" style={{ color: '#8C8F94' }}>
+                            1-2 paragraphs (around 15-70 words)
+                          </p>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="flex-col items-start">
+                          <p>{TextLengths.Moderate}</p>
+                          <p className="text-xs" style={{ color: '#8C8F94' }}>
+                            2-3 paragraphs (around 70-120 words)
+                          </p>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="flex-col items-start">
+                          <p>{TextLengths.Detailed}</p>
+                          <p className="text-xs" style={{ color: '#8C8F94' }}>
+                            3+ paragraphs (around 120-170 words)
+                          </p>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                  <div className="grid grid-cols-2 items-center gap-4">
+                    <Label htmlFor="maxWidth" className="w-20">
+                      Tone
+                    </Label>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-between"
+                        >
+                          {Tones.Professional}
+                          <IconChevronDown size={20} color="#71717A" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        {Children.toArray(
+                          Object.values(Tones).map(tone => (
+                            <DropdownMenuItem>{tone}</DropdownMenuItem>
+                          ))
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
     </div>
   )
