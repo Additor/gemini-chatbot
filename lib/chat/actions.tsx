@@ -1,9 +1,4 @@
 // @ts-nocheck
-
-/* eslint-disable jsx-a11y/alt-text */
-/* eslint-disable @next/next/no-img-element */
-import 'server-only'
-
 import {
   createAI,
   createStreamableUI,
@@ -19,22 +14,18 @@ import { saveChat } from '@/app/actions'
 import { SpinnerMessage, UserMessage } from '@/components/stocks/message'
 import { Chat } from '../types'
 import { auth } from '@/auth'
-import { FlightStatus } from '@/components/flights/flight-status'
 import { SelectSeats } from '@/components/flights/select-seats'
 import { ListFlights } from '@/components/flights/list-flights'
 import { BoardingPass } from '@/components/flights/boarding-pass'
 import { PurchaseTickets } from '@/components/flights/purchase-ticket'
 import { CheckIcon, SpinnerIcon } from '@/components/ui/icons'
-import { format } from 'date-fns'
 import { experimental_streamText, experimental_generateText } from 'ai'
 import { google } from 'ai/google'
 import { GoogleGenerativeAI } from '@google/generative-ai'
-import { z } from 'zod'
 import { ListHotels } from '@/components/hotels/list-hotels'
 import { Destinations } from '@/components/flights/destinations'
 import { Video } from '@/components/media/video'
 import { rateLimit } from './ratelimit'
-import {getFixedAccessToken, refreshFixedTokens} from "@/app/google/OAuth";
 
 const genAI = new GoogleGenerativeAI(
   process.env.GOOGLE_GENERATIVE_AI_API_KEY || ''
@@ -203,6 +194,8 @@ async function submitUserMessage(content: string) {
 }
 
 export async function generateTextContents(prompt: string): Promise<string> {
+  'use server'
+
   const tunedModelId = process.env.TUNED_MODEL_ID;
   if (!tunedModelId) {
     throw new Error('TUNED_MODEL_ID is not set: (ex_ tunedModels/......)');
@@ -214,6 +207,8 @@ export async function generateTextContents(prompt: string): Promise<string> {
   }
 
   async function generate(accessToken: string): Promise<string> {
+    console.log('AccessToken:', accessToken)
+
     const model = google.generativeAI(tunedModelId);
     model['config'].headers = function() {
       return {
@@ -234,10 +229,13 @@ export async function generateTextContents(prompt: string): Promise<string> {
     return result.text;
   }
 
+  if (typeof window !== 'undefined') {
+    return;
+  }
 
+  const { getFixedAccessToken } = require('@/lib/chat/OAuth');
   try {
-    // const accessToken = await getFixedAccessToken();
-    const accessToken = '';
+    const accessToken = await getFixedAccessToken();
     return generate(accessToken);
   } catch (error) {
     console.error('Generate Error:', error);

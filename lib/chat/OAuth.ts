@@ -1,6 +1,8 @@
+'use server'
+
 import {OAuth2Client, Credentials} from "google-auth-library";
 
-export function getOAuthClient(): OAuth2Client {
+function getOAuthClient(): OAuth2Client {
   return new OAuth2Client(
     process.env.CLIENT_ID,
     process.env.CLIENT_SECRET,
@@ -8,10 +10,11 @@ export function getOAuthClient(): OAuth2Client {
   );
 }
 
-export function getRedirectUrl(): string {
+export async function getRedirectUrl(): Promise<string> {
   const oauthClient = getOAuthClient();
 
   return oauthClient.generateAuthUrl({
+    access_type: 'offline',
     scope: [
       'https://www.googleapis.com/auth/cloud-platform',
       'https://www.googleapis.com/auth/generative-language.tuning',
@@ -34,7 +37,6 @@ export async function refreshFixedTokens(): Promise<Credentials> {
   const oauthClient = getOAuthClient();
 
   const credentials = JSON.parse(process.env.CREDENTIALS as string);
-
   oauthClient.setCredentials(credentials);
 
   const { credentials: nextCredentials } = await oauthClient.refreshAccessToken();
