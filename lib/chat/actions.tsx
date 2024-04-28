@@ -11,8 +11,13 @@ import { BotCard, BotMessage } from '@/components/stocks'
 
 import { nanoid } from '@/lib/utils'
 import { saveChat } from '@/app/actions'
-import { SpinnerMessage, UserMessage } from '@/components/stocks/message'
-import { Chat } from '../types'
+import {
+  EvaluationSpinnerMessage,
+  ImprovementSpinnerMessage,
+  SpinnerMessage,
+  UserMessage
+} from '@/components/stocks/message'
+import { Chat, ProposalEvaluation, Tone, TextLength } from '../types'
 import { auth } from '@/auth'
 import { SelectSeats } from '@/components/flights/select-seats'
 import { ListFlights } from '@/components/flights/list-flights'
@@ -24,10 +29,22 @@ import { ListHotels } from '@/components/hotels/list-hotels'
 import { Destinations } from '@/components/flights/destinations'
 import { rateLimit } from './ratelimit'
 
-async function submitUserMessage(content: string) {
+type EvaluationParams = {
+  exact?: boolean
+}
+
+type EvaluationReturns = {
+  guideText: string
+  evaluation: ProposalEvaluation
+}
+
+async function submitMessageToEvaluationModel(
+  content: string,
+  params?: EvaluationParams
+) {
   'use server'
 
-  console.log(`submitUserMessage(${content})`);
+  console.log(`submitMessageToEvaluationModel(${content})`)
 
   await rateLimit()
 
@@ -52,17 +69,19 @@ async function submitUserMessage(content: string) {
   // console.log(history)
 
   const textStream = createStreamableValue('')
-  const spinnerStream = createStreamableUI(<SpinnerMessage />)
+  const spinnerStream = createStreamableUI(
+    exact ? <EvaluationSpinnerMessage /> : <SpinnerMessage />
+  )
   const messageStream = createStreamableUI(null)
-  const uiStream = createStreamableUI();
+  const uiStream = createStreamableUI()
 
-  (async () => {
+  ;(async () => {
     try {
-      const tunedModelId = `tunedModels/${aiState.get().modelId}`;
-      const textContent = await generateTextContents(content, tunedModelId);
+      const tunedModelId = `tunedModels/${process.env.NEXT_PUBLIC_EVALUATION_TUNED_MODEL_ID}`
+      console.log({ tunedModelId })
+      const textContent = await generateTextContents(content, tunedModelId)
 
       spinnerStream.done(null)
-
 
       messageStream.update(<BotMessage content={textContent} />)
 
@@ -89,7 +108,7 @@ async function submitUserMessage(content: string) {
       messageStream.error(error)
       aiState.done()
     }
-  })();
+  })()
 
   return {
     id: nanoid(),
@@ -99,52 +118,146 @@ async function submitUserMessage(content: string) {
   }
 }
 
-export async function generateTextContents(prompt: string, modelId: string): Promise<string> {
+type ImprovementParams = {
+  exact?: boolean
+  tone: Tone
+  textLength: TextLength
+}
+
+type ImprovementReturns = {
+  guideText: string
+  markdown: string
+}
+
+async function submitMessageToImprovementModel(
+  content: string,
+  params?: ImprovementParams
+) {
   'use server'
 
-  const projectId = process.env.PROJECT_ID;
+  console.log(`submitMessageToImprovementModel(${content})`)
+
+  await rateLimit()
+
+  const aiState = getMutableAIState()
+
+  aiState.update({
+    ...aiState.get(),
+    messages: [
+      ...aiState.get().messages,
+      {
+        id: nanoid(),
+        role: 'user',
+        content: `${aiState.get().interactions.join('\n\n')}\n\n${content}`
+      }
+    ]
+  })
+
+  // const history = aiState.get().messages.map(message => ({
+  //   role: message.role,
+  //   content: message.content
+  // }))
+  // console.log(history)
+
+  const textStream = createStreamableValue('')
+  const spinnerStream = createStreamableUI(
+    exact ? <ImprovementSpinnerMessage /> : <SpinnerMessage />
+  )
+  const messageStream = createStreamableUI(null)
+  const uiStream = createStreamableUI()
+
+  ;(async () => {
+    try {
+      const tunedModelId = `tunedModels/${process.env.NEXT_PUBLIC_IMPROVEMENT_TUNED_MODEL_ID}`
+      console.log({ tunedModelId })
+      const textContent = await generateTextContents(content, tunedModelId)
+
+      spinnerStream.done(null)
+
+      messageStream.update(<BotMessage content={textContent} />)
+
+      aiState.update({
+        ...aiState.get(),
+        messages: [
+          ...aiState.get().messages,
+          {
+            id: nanoid(),
+            role: 'assistant',
+            content: textContent
+          }
+        ]
+      })
+
+      uiStream.done()
+      textStream.done()
+      messageStream.done()
+    } catch (e) {
+      const error = new Error(e.message)
+
+      uiStream.error(error)
+      textStream.error(error)
+      messageStream.error(error)
+      aiState.done()
+    }
+  })()
+
+  return {
+    id: nanoid(),
+    attachments: uiStream.value,
+    spinner: spinnerStream.value,
+    display: messageStream.value
+  }
+}
+
+export async function generateTextContents(
+  prompt: string,
+  modelId: string
+): Promise<string> {
+  'use server'
+
+  const projectId = process.env.PROJECT_ID
   if (!projectId) {
-    throw new Error('PROJECT_ID is not set');
+    throw new Error('PROJECT_ID is not set')
   }
 
   if (!modelId) {
-    throw new Error('modelId is not set');
+    throw new Error('modelId is not set')
   }
 
   async function generate(accessToken: string): Promise<string> {
-    const model = google.generativeAI(modelId);
-    model['config'].headers = function() {
+    const model = google.generativeAI(modelId)
+    model['config'].headers = function () {
       return {
         Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
-        'x-goog-user-project': projectId,
-      };
-    };
+        'x-goog-user-project': projectId
+      }
+    }
 
     const result = await experimental_generateText({
       model,
       temperature: 0,
       // system: 'Try for the best results',
       // messages: [...history],
-      prompt,
+      prompt
     })
 
-    return result.text;
+    return result.text
   }
 
   if (typeof window !== 'undefined') {
-    return;
+    return
   }
 
-  const { getFixedAccessToken } = require('@/lib/chat/OAuth');
+  const { getFixedAccessToken } = require('@/lib/chat/OAuth')
   try {
-    const accessToken = await getFixedAccessToken();
-    return generate(accessToken);
+    const accessToken = await getFixedAccessToken()
+    return generate(accessToken)
   } catch (error) {
-    console.error('Generate Error:', error);
+    console.error('Generate Error:', error)
 
-    const accessToken = await getFixedAccessToken(true);
-    return generate(accessToken);
+    const accessToken = await getFixedAccessToken(true)
+    return generate(accessToken)
   }
 }
 
@@ -175,10 +288,16 @@ export type UIState = {
 
 export const AI = createAI<AIState, UIState>({
   actions: {
-    submitUserMessage,
+    submitMessageToEvaluationModel,
+    submitMessageToImprovementModel
   },
   initialUIState: [],
-  initialAIState: { chatId: nanoid(), interactions: [], messages: [], modelId: '' },
+  initialAIState: {
+    chatId: nanoid(),
+    interactions: [],
+    messages: [],
+    modelId: ''
+  },
   unstable_onGetUIState: async () => {
     'use server'
 

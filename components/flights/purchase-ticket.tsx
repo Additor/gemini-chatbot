@@ -44,9 +44,16 @@ export const PurchaseTickets = ({
     seat: '1A'
   }
 }: PurchaseProps) => {
+<<<<<<< Updated upstream
   const [currentStatus] = useState(status)
   const { submitUserMessage } = useActions()
   const [display] = useState(null)
+=======
+  const [currentStatus, setCurrentStatus] = useState(status)
+  const { requestCode, validateCode, submitMessageToEvaluationModel } =
+    useActions()
+  const [display, setDisplay] = useState(null)
+>>>>>>> Stashed changes
   const [_, setMessages] = useUIState()
 
   return (
@@ -123,7 +130,7 @@ export const PurchaseTickets = ({
             key={suggestion}
             className="flex items-center gap-2 px-3 py-2 text-sm transition-colors bg-zinc-50 hover:bg-zinc-100 rounded-xl cursor-pointer"
             onClick={async () => {
-              const response = await submitUserMessage(suggestion)
+              const response = await submitMessageToEvaluationModel(suggestion)
               setMessages((currentMessages: any[]) => [
                 ...currentMessages,
                 response

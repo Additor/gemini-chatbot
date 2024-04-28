@@ -3,7 +3,7 @@
 import { useActions, useUIState } from 'ai/rsc'
 
 export const Destinations = ({ destinations }: { destinations: string[] }) => {
-  const { submitUserMessage } = useActions()
+  const { submitMessageToEvaluationModel } = useActions()
   const [_, setMessages] = useUIState()
 
   return (
@@ -18,7 +18,7 @@ export const Destinations = ({ destinations }: { destinations: string[] }) => {
             className="flex items-center gap-2 px-3 py-2 text-sm transition-colors bg-zinc-50 hover:bg-zinc-100 rounded-xl cursor-pointer"
             key={destination}
             onClick={async () => {
-              const response = await submitUserMessage(
+              const response = await submitMessageToEvaluationModel(
                 `I would like to fly to ${destination}, proceed to choose flights.`
               )
               setMessages((currentMessages: any[]) => [

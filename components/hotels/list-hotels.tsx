@@ -37,7 +37,7 @@ export const ListHotels = ({
     }
   ]
 }: ListHotelsProps) => {
-  const { submitUserMessage } = useActions()
+  const { submitMessageToEvaluationModel } = useActions()
   const [_, setMessages] = useUIState()
 
   return (
@@ -52,7 +52,7 @@ export const ListHotels = ({
             key={hotel.id}
             className="p-2 flex justify-between hover:bg-zinc-50 rounded-xl cursor-pointer gap-4"
             onClick={async () => {
-              const response = await submitUserMessage(
+              const response = await submitMessageToEvaluationModel(
                 `I want to book the ${hotel.name}, proceed to checkout by calling checkoutBooking function.`
               )
               setMessages((currentMessages: any[]) => [

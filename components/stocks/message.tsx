@@ -134,3 +134,45 @@ export function SpinnerMessage() {
     </div>
   )
 }
+
+export function EvaluationSpinnerMessage() {
+  return (
+    <>
+      <div className="group relative flex items-start md:-ml-12">
+        <div className="bg-background flex size-[25px] shrink-0 select-none items-center justify-center rounded-lg border shadow-sm">
+          <img className="size-6" src="/images/gemini.png" alt="gemini logo" />
+        </div>
+        <div className="ml-4 h-[24px] flex flex-row items-center flex-1 space-y-2 overflow-hidden px-1">
+          {spinner}
+        </div>
+      </div>
+      <p className="mb-2 last:mb-0">
+        Analyzing Your Proposal... 🕒
+        <br />
+        Please hang tight—It will be ready in about a minute. It will be worth
+        the wait!
+      </p>
+    </>
+  )
+}
+
+export function ImprovementSpinnerMessage() {
+  return (
+    <>
+      <div className="group relative flex items-start md:-ml-12">
+        <div className="bg-background flex size-[25px] shrink-0 select-none items-center justify-center rounded-lg border shadow-sm">
+          <img className="size-6" src="/images/gemini.png" alt="gemini logo" />
+        </div>
+        <div className="ml-4 h-[24px] flex flex-row items-center flex-1 space-y-2 overflow-hidden px-1">
+          {spinner}
+        </div>
+      </div>
+      <p className="mb-2 last:mb-0">
+        Generating Your Proposal... 🕒
+        <br />
+        Please hang tight—It will be ready in about a minute. It will be worth
+        the wait!
+      </p>
+    </>
+  )
+}

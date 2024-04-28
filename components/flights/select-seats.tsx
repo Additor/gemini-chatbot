@@ -33,7 +33,7 @@ export const SelectSeats = ({
   const [selectedSeat, setSelectedSeat] = useState('')
   const { departingCity, arrivalCity, flightCode, date } = summary
   const [_, setMessages] = useUIState()
-  const { submitUserMessage } = useActions()
+  const { submitMessageToEvaluationModel } = useActions()
 
   return (
     <div className="grid gap-4">
@@ -125,7 +125,10 @@ export const SelectSeats = ({
               key={suggestion}
               className="flex items-center gap-2 px-3 py-2 text-sm transition-colors bg-zinc-50 hover:bg-zinc-100 rounded-xl cursor-pointer"
               onClick={async () => {
-                const response = await submitUserMessage(suggestion, [])
+                const response = await submitMessageToEvaluationModel(
+                  suggestion,
+                  []
+                )
                 setMessages((currentMessages: any[]) => [
                   ...currentMessages,
                   response

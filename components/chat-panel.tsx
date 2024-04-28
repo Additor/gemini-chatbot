@@ -33,14 +33,14 @@ export function ChatPanel({
 }: ChatPanelProps) {
   const [aiState] = useAIState()
   const [messages, setMessages] = useUIState<typeof AI>()
-  const { submitUserMessage } = useActions()
+  const { submitMessageToEvaluationModel } = useActions()
   const [shareDialogOpen, setShareDialogOpen] = React.useState(false)
 
   const exampleMessages = [
     {
       heading: 'List flights flying from',
       subheading: 'San Francisco to Rome today',
-      message: `List flights flying from San Francisco to Rome today`
+      message: 'List flights flying from San Francisco to Rome today'
     },
     {
       heading: 'What is the status',
@@ -76,9 +76,11 @@ export function ChatPanel({
                   ])
 
                   try {
-                    const responseMessage = await submitUserMessage(
-                      example.message
-                    )
+                    const responseMessage =
+                      await submitMessageToEvaluationModel(
+                        example.message,
+                        true
+                      )
 
                     setMessages(currentMessages => [
                       ...currentMessages,
@@ -88,16 +90,7 @@ export function ChatPanel({
                     toast(
                       <div className="text-red-600">
                         You have reached your message limit! Please try again
-                        later, or{' '}
-                        <a
-                          className="underline"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          href="https://vercel.com/templates/next.js/gemini-ai-chatbot"
-                        >
-                          deploy your own version
-                        </a>
-                        .
+                        later.
                       </div>
                     )
                   }

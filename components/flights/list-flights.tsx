@@ -34,7 +34,7 @@ export const ListFlights = ({
 }: ListFlightsProps) => {
   const { arrivalCity, departingCity, arrivalAirport, departingAirport, date } =
     summary
-  const { submitUserMessage } = useActions()
+  const { submitMessageToEvaluationModel } = useActions()
   const [_, setMessages] = useUIState()
 
   const flights = [
@@ -84,7 +84,7 @@ export const ListFlights = ({
               key={flight.id}
               className="flex cursor-pointer flex-row items-start sm:items-center gap-4 rounded-xl p-2 hover:bg-zinc-50"
               onClick={async () => {
-                const response = await submitUserMessage(
+                const response = await submitMessageToEvaluationModel(
                   `The user has selected flight ${flight.airlines}, departing at ${flight.departureTime} and arriving at ${flight.arrivalTime} for $${flight.price}. Now proceeding to select seats.`
                 )
                 setMessages((currentMessages: any[]) => [

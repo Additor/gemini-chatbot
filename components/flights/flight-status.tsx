@@ -60,7 +60,7 @@ export const FlightStatus = ({
     date
   } = summary
 
-  const { submitUserMessage } = useActions()
+  const { submitMessageToEvaluationModel } = useActions()
   const [_, setMessages] = useUIState()
 
   return (
@@ -134,7 +134,7 @@ export const FlightStatus = ({
             key={suggestion}
             className="flex items-center gap-2 px-3 py-2 text-sm transition-colors bg-zinc-50 hover:bg-zinc-100 rounded-xl cursor-pointer"
             onClick={async () => {
-              const response = await submitUserMessage(suggestion)
+              const response = await submitMessageToEvaluationModel(suggestion)
               setMessages((currentMessages: any[]) => [
                 ...currentMessages,
                 response
