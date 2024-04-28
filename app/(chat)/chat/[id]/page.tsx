@@ -36,6 +36,8 @@ export default async function ChatPage({ params }: ChatPageProps) {
     redirect(`/login?next=/chat/${params.id}`)
   }
 
+  const modelId = process.env.EVALUATION_TUNED_MODEL_ID!;
+
   const userId = session.user.id as string
   const chat = await getChat(params.id, userId)
 
@@ -52,7 +54,8 @@ export default async function ChatPage({ params }: ChatPageProps) {
       initialAIState={{
         chatId: chat.id,
         messages: chat.messages,
-        interactions: []
+        interactions: [],
+        modelId
       }}
     >
       <Chat
