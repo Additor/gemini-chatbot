@@ -44,9 +44,9 @@ export const PurchaseTickets = ({
     seat: '1A'
   }
 }: PurchaseProps) => {
-  const [currentStatus, setCurrentStatus] = useState(status)
-  const { requestCode, validateCode, submitUserMessage } = useActions()
-  const [display, setDisplay] = useState(null)
+  const [currentStatus] = useState(status)
+  const { submitUserMessage } = useActions()
+  const [display] = useState(null)
   const [_, setMessages] = useUIState()
 
   return (
@@ -73,9 +73,7 @@ export const PurchaseTickets = ({
             <button
               className="p-2 text-center rounded-full cursor-pointer bg-zinc-900 text-zinc-50 hover:bg-zinc-600 transition-colors"
               onClick={async () => {
-                const { status, display } = await requestCode()
-                setCurrentStatus(status)
-                setDisplay(display)
+
               }}
             >
               Pay $981
@@ -99,14 +97,7 @@ export const PurchaseTickets = ({
             <button
               className="p-2 text-center rounded-full cursor-pointer bg-zinc-900 text-zinc-50 hover:bg-zinc-600 transition-colors"
               onClick={async () => {
-                const { status, display } = await validateCode()
 
-                for await (const statusFromStream of readStreamableValue(
-                  status
-                )) {
-                  setCurrentStatus(statusFromStream as Status)
-                  setDisplay(display)
-                }
               }}
             >
               Submit

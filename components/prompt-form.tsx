@@ -94,28 +94,6 @@ export function PromptForm({
             toast.error('No file selected')
             return
           }
-
-          const file = event.target.files[0]
-
-          if (file.type.startsWith('video/')) {
-            const responseMessage = await describeImage('')
-            setMessages(currentMessages => [
-              ...currentMessages,
-              responseMessage
-            ])
-          } else {
-            const reader = new FileReader()
-            reader.readAsDataURL(file)
-
-            reader.onloadend = async () => {
-              const base64String = reader.result
-              const responseMessage = await describeImage(base64String)
-              setMessages(currentMessages => [
-                ...currentMessages,
-                responseMessage
-              ])
-            }
-          }
         }}
       />
       <div className="relative flex max-h-60 w-full grow flex-col overflow-hidden bg-zinc-100 px-12 sm:rounded-full sm:px-12">

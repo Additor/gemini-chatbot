@@ -9,7 +9,7 @@ import {
 
 import { BotCard, BotMessage } from '@/components/stocks'
 
-import { nanoid, sleep } from '@/lib/utils'
+import { nanoid } from '@/lib/utils'
 import { saveChat } from '@/app/actions'
 import { SpinnerMessage, UserMessage } from '@/components/stocks/message'
 import { Chat } from '../types'
@@ -18,106 +18,11 @@ import { SelectSeats } from '@/components/flights/select-seats'
 import { ListFlights } from '@/components/flights/list-flights'
 import { BoardingPass } from '@/components/flights/boarding-pass'
 import { PurchaseTickets } from '@/components/flights/purchase-ticket'
-import { CheckIcon, SpinnerIcon } from '@/components/ui/icons'
-import { experimental_streamText, experimental_generateText } from 'ai'
+import { experimental_generateText } from 'ai'
 import { google } from 'ai/google'
-import { GoogleGenerativeAI } from '@google/generative-ai'
 import { ListHotels } from '@/components/hotels/list-hotels'
 import { Destinations } from '@/components/flights/destinations'
-import { Video } from '@/components/media/video'
 import { rateLimit } from './ratelimit'
-
-const genAI = new GoogleGenerativeAI(
-  process.env.GOOGLE_GENERATIVE_AI_API_KEY || ''
-)
-
-async function describeImage(imageBase64: string) {
-  'use server'
-
-  await rateLimit()
-
-  const aiState = getMutableAIState()
-  const spinnerStream = createStreamableUI(null)
-  const messageStream = createStreamableUI(null)
-  const uiStream = createStreamableUI()
-
-  uiStream.update(
-    <BotCard>
-      <Video isLoading />
-    </BotCard>
-  )
-  ;(async () => {
-    try {
-      let text = ''
-
-      // attachment as video for demo purposes,
-      // add your implementation here to support
-      // video as input for prompts.
-      if (imageBase64 === '') {
-        await new Promise(resolve => setTimeout(resolve, 5000))
-
-        text = `
-      The books in this image are:
-
-      1. The Little Prince by Antoine de Saint-Exupéry
-      2. The Prophet by Kahlil Gibran
-      3. Man's Search for Meaning by Viktor Frankl
-      4. The Alchemist by Paulo Coelho
-      5. The Kite Runner by Khaled Hosseini
-      6. To Kill a Mockingbird by Harper Lee
-      7. The Catcher in the Rye by J.D. Salinger
-      8. The Great Gatsby by F. Scott Fitzgerald
-      9. 1984 by George Orwell
-      10. Animal Farm by George Orwell
-      `
-      } else {
-        const imageData = imageBase64.split(',')[1]
-
-        const model = genAI.getGenerativeModel({ model: 'gemini-pro-vision' })
-        const prompt = 'List the books in this image.'
-        const image = {
-          inlineData: {
-            data: imageData,
-            mimeType: 'image/png'
-          }
-        }
-
-        const result = await model.generateContent([prompt, image])
-        text = result.response.text()
-        console.log(text)
-      }
-
-      spinnerStream.done(null)
-      messageStream.done(null)
-
-      uiStream.done(
-        <BotCard>
-          <Video />
-        </BotCard>
-      )
-
-      aiState.done({
-        ...aiState.get(),
-        interactions: [text]
-      })
-    } catch (e) {
-      const error = new Error(
-        'The AI got rate limited, please try again later.'
-      )
-      uiStream.error(error)
-      spinnerStream.error(error)
-      messageStream.error(error)
-      aiState.done()
-    }
-  })()
-
-  return {
-    id: nanoid(),
-    attachments: uiStream.value,
-    spinner: spinnerStream.value,
-    display: messageStream.value
-  }
-}
 
 async function submitUserMessage(content: string) {
   'use server'
@@ -243,93 +148,6 @@ export async function generateTextContents(prompt: string, modelId: string): Pro
   }
 }
 
-export async function requestCode() {
-  'use server'
-
-  console.log('requestCode()');
-  const aiState = getMutableAIState()
-
-  aiState.done({
-    ...aiState.get(),
-    messages: [
-      ...aiState.get().messages,
-      {
-        role: 'assistant',
-        content:
-          "A code has been sent to user's phone. They should enter it in the user interface to continue."
-      }
-    ]
-  })
-
-  const ui = createStreamableUI(
-    <div className="animate-spin">
-      <SpinnerIcon />
-    </div>
-  )
-
-  ;(async () => {
-    await sleep(2000)
-    ui.done()
-  })()
-
-  return {
-    status: 'requires_code',
-    display: ui.value
-  }
-}
-
-export async function validateCode() {
-  'use server'
-
-  console.log('validateCode()');
-  const aiState = getMutableAIState()
-
-  const status = createStreamableValue('in_progress')
-  const ui = createStreamableUI(
-    <div className="flex flex-col items-center justify-center gap-3 p-6 text-zinc-500">
-      <div className="animate-spin">
-        <SpinnerIcon />
-      </div>
-      <div className="text-sm text-zinc-500">
-        Please wait while we fulfill your order.
-      </div>
-    </div>
-  )
-
-  ;(async () => {
-    await sleep(2000)
-
-    ui.done(
-      <div className="flex flex-col items-center text-center justify-center gap-3 p-4 text-emerald-700">
-        <CheckIcon />
-        <div>Payment Succeeded</div>
-        <div className="text-sm text-zinc-600">
-          Thanks for your purchase! You will receive an email confirmation
-          shortly.
-        </div>
-      </div>
-    )
-
-    aiState.done({
-      ...aiState.get(),
-      messages: [
-        ...aiState.get().messages.slice(0, -1),
-        {
-          role: 'assistant',
-          content: 'The purchase has completed successfully.'
-        }
-      ]
-    })
-
-    status.done('completed')
-  })()
-
-  return {
-    status: status.value,
-    display: ui.value
-  }
-}
-
 export type Message = {
   role: 'user' | 'assistant' | 'system' | 'function' | 'data' | 'tool'
   content: string
@@ -358,9 +176,6 @@ export type UIState = {
 export const AI = createAI<AIState, UIState>({
   actions: {
     submitUserMessage,
-    requestCode,
-    validateCode,
-    describeImage
   },
   initialUIState: [],
   initialAIState: { chatId: nanoid(), interactions: [], messages: [], modelId: '' },
