@@ -153,7 +153,8 @@ async function submitUserMessage(content: string) {
 
   (async () => {
     try {
-      const textContent = await generateTextContents(content);
+      const tunedModelId = `tunedModels/${aiState.get().modelId}`;
+      const textContent = await generateTextContents(content, tunedModelId);
 
       spinnerStream.done(null)
 
@@ -193,23 +194,20 @@ async function submitUserMessage(content: string) {
   }
 }
 
-export async function generateTextContents(prompt: string): Promise<string> {
+export async function generateTextContents(prompt: string, modelId: string): Promise<string> {
   'use server'
-
-  const tunedModelId = process.env.TUNED_MODEL_ID;
-  if (!tunedModelId) {
-    throw new Error('TUNED_MODEL_ID is not set: (ex_ tunedModels/......)');
-  }
 
   const projectId = process.env.PROJECT_ID;
   if (!projectId) {
     throw new Error('PROJECT_ID is not set');
   }
 
-  async function generate(accessToken: string): Promise<string> {
-    console.log('AccessToken:', accessToken)
+  if (!modelId) {
+    throw new Error('modelId is not set');
+  }
 
-    const model = google.generativeAI(tunedModelId);
+  async function generate(accessToken: string): Promise<string> {
+    const model = google.generativeAI(modelId);
     model['config'].headers = function() {
       return {
         Authorization: `Bearer ${accessToken}`,
@@ -345,6 +343,7 @@ export type Message = {
 
 export type AIState = {
   chatId: string
+  modelId: string
   interactions?: string[]
   messages: Message[]
 }
@@ -364,7 +363,7 @@ export const AI = createAI<AIState, UIState>({
     describeImage
   },
   initialUIState: [],
-  initialAIState: { chatId: nanoid(), interactions: [], messages: [] },
+  initialAIState: { chatId: nanoid(), interactions: [], messages: [], modelId: '' },
   unstable_onGetUIState: async () => {
     'use server'
 
