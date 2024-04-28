@@ -7,9 +7,6 @@ import { ChatList } from '@/components/chat-list'
 import { FooterText } from '@/components/footer'
 import { AI, UIState, getUIStateFromAIState } from '@/lib/chat/actions'
 
-export const runtime = 'edge'
-export const preferredRegion = 'home'
-
 interface SharePageProps {
   params: {
     id: string
@@ -27,6 +24,7 @@ export async function generateMetadata({
 }
 
 export default async function SharePage({ params }: SharePageProps) {
+
   const chat = await getSharedChat(params.id)
 
   if (!chat || !chat?.sharePath) {
