@@ -44,16 +44,10 @@ export const PurchaseTickets = ({
     seat: '1A'
   }
 }: PurchaseProps) => {
-<<<<<<< Updated upstream
-  const [currentStatus] = useState(status)
-  const { submitUserMessage } = useActions()
-  const [display] = useState(null)
-=======
   const [currentStatus, setCurrentStatus] = useState(status)
   const { requestCode, validateCode, submitMessageToEvaluationModel } =
     useActions()
   const [display, setDisplay] = useState(null)
->>>>>>> Stashed changes
   const [_, setMessages] = useUIState()
 
   return (
@@ -79,9 +73,7 @@ export const PurchaseTickets = ({
             </p>
             <button
               className="p-2 text-center rounded-full cursor-pointer bg-zinc-900 text-zinc-50 hover:bg-zinc-600 transition-colors"
-              onClick={async () => {
-
-              }}
+              onClick={async () => {}}
             >
               Pay $981
             </button>
@@ -103,9 +95,7 @@ export const PurchaseTickets = ({
             </div>
             <button
               className="p-2 text-center rounded-full cursor-pointer bg-zinc-900 text-zinc-50 hover:bg-zinc-600 transition-colors"
-              onClick={async () => {
-
-              }}
+              onClick={async () => {}}
             >
               Submit
             </button>
