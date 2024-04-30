@@ -17,26 +17,18 @@ import {
   SpinnerMessage,
   UserMessage
 } from '@/components/stocks/message'
-import { Chat, ProposalEvaluation, Tone, TextLength } from '../types'
+import { Chat } from '../types'
 import { auth } from '@/auth'
 import { SelectSeats } from '@/components/flights/select-seats'
 import { ListFlights } from '@/components/flights/list-flights'
 import { BoardingPass } from '@/components/flights/boarding-pass'
 import { PurchaseTickets } from '@/components/flights/purchase-ticket'
-import { experimental_generateText } from 'ai'
-import { google } from 'ai/google'
 import { ListHotels } from '@/components/hotels/list-hotels'
 import { Destinations } from '@/components/flights/destinations'
 import { rateLimit } from './ratelimit'
-
-type EvaluationParams = {
-  exact?: boolean
-}
-
-type EvaluationReturns = {
-  guideText: string
-  evaluation: ProposalEvaluation
-}
+import { EvaluationParams } from '@/lib/chat/evaluation.types'
+import { doEvaluate } from './evaluation.action'
+import { doImprove } from './improvement.action'
 
 async function submitMessageToEvaluationModel(
   content: string,
@@ -70,16 +62,18 @@ async function submitMessageToEvaluationModel(
 
   const textStream = createStreamableValue('')
   const spinnerStream = createStreamableUI(
-    exact ? <EvaluationSpinnerMessage /> : <SpinnerMessage />
+    params?.exact ? <EvaluationSpinnerMessage /> : <SpinnerMessage />
   )
   const messageStream = createStreamableUI(null)
   const uiStream = createStreamableUI()
 
-  ;(async () => {
+  await (async () => {
     try {
-      const tunedModelId = `tunedModels/${process.env.NEXT_PUBLIC_EVALUATION_TUNED_MODEL_ID}`
-      console.log({ tunedModelId })
-      const textContent = await generateTextContents(content, tunedModelId)
+      const textContent = await doEvaluate({
+        content: {
+          proposalFromUser: content
+        }
+      })
 
       spinnerStream.done(null)
 
@@ -116,17 +110,6 @@ async function submitMessageToEvaluationModel(
     spinner: spinnerStream.value,
     display: messageStream.value
   }
-}
-
-type ImprovementParams = {
-  exact?: boolean
-  tone: Tone
-  textLength: TextLength
-}
-
-type ImprovementReturns = {
-  guideText: string
-  markdown: string
 }
 
 async function submitMessageToImprovementModel(
@@ -166,11 +149,13 @@ async function submitMessageToImprovementModel(
   const messageStream = createStreamableUI(null)
   const uiStream = createStreamableUI()
 
-  ;(async () => {
+  await (async () => {
     try {
-      const tunedModelId = `tunedModels/${process.env.NEXT_PUBLIC_IMPROVEMENT_TUNED_MODEL_ID}`
-      console.log({ tunedModelId })
-      const textContent = await generateTextContents(content, tunedModelId)
+      const textContent = await doImprove({
+        content: {
+          proposalFromUser: content
+        }
+      })
 
       spinnerStream.done(null)
 
@@ -206,58 +191,6 @@ async function submitMessageToImprovementModel(
     attachments: uiStream.value,
     spinner: spinnerStream.value,
     display: messageStream.value
-  }
-}
-
-export async function generateTextContents(
-  prompt: string,
-  modelId: string
-): Promise<string> {
-  'use server'
-
-  const projectId = process.env.PROJECT_ID
-  if (!projectId) {
-    throw new Error('PROJECT_ID is not set')
-  }
-
-  if (!modelId) {
-    throw new Error('modelId is not set')
-  }
-
-  async function generate(accessToken: string): Promise<string> {
-    const model = google.generativeAI(modelId)
-    model['config'].headers = function () {
-      return {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-        'x-goog-user-project': projectId
-      }
-    }
-
-    const result = await experimental_generateText({
-      model,
-      temperature: 0,
-      // system: 'Try for the best results',
-      // messages: [...history],
-      prompt
-    })
-
-    return result.text
-  }
-
-  if (typeof window !== 'undefined') {
-    return
-  }
-
-  const { getFixedAccessToken } = require('@/lib/chat/OAuth')
-  try {
-    const accessToken = await getFixedAccessToken()
-    return generate(accessToken)
-  } catch (error) {
-    console.error('Generate Error:', error)
-
-    const accessToken = await getFixedAccessToken(true)
-    return generate(accessToken)
   }
 }
 
