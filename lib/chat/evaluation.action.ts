@@ -84,37 +84,55 @@ function defaultScoringCriteria(): string {
   generator
     .insertLine(`1. ${ProposalEvaluationCategories.Background}`)
     .insertLine(
-      'Requirements: Clear understanding and reflection of specific client requirements. (e.g. Target audience, constraints, product or deliverable specifications) Clearly defined expected outcomes of the project. (e.g. Project scope, details, services to be provided, references) Defined stages of project progression with specific milestones. (e.g. Concept development, design completion, launch, post-launch management). Clearly defined budget range provided by the client.'
+      "4 points: Provides a detailed context of project initiation with specific examples and a deep understanding of the client's business model.\n" +
+        "3 points: Adequately explains project initiation context and shows a basic understanding of the client's business model.\n" +
+        "2 points: Briefly mentions the context with vague references or lacks detail in describing the client's business model.\n" +
+        "1 point: Dose not mention project initiation context or client's business model."
     )
 
   generator
     .insertLine(`2. ${ProposalEvaluationCategories.Goal}`)
     .insertLine(
-      "Clarity in the purpose and objectives of the project based on understanding of client's basic business model and key business areas. Defined criteria for success and potential failure factors. (e.g. Revenue increase, market share expansion, customer satisfaction, quality standards) Understanding the context and reasons for project initiation. (e.g. New market entry, competition intensification, regulatory changes)"
+      '4 points: Presents clearly defined SMART goals with quantifiable success criteria and explicit alignment to project objectives.\n' +
+        '3 points: Presents goals with some SMART elements and qualitative success criteria, mostly aligned with project objectives.\n' +
+        '2 points: Presents goals that lack specificity, have unmeasurable outcomes, or have unclear alignment with project objectives.\n' +
+        '1 point: Does not state clear goals or success criteria.'
     )
 
   generator
     .insertLine(`3. ${ProposalEvaluationCategories.Specificity}`)
     .insertLine(
-      'Detailed description of how the solution contributes to achieving business objectives.'
+      '4 points: Includes a detailed timeline with specific dates, an itemized budget with cost breakdowns, and deliverables with technical specifications clearly aligned to project objectives.\n' +
+        '3 points: Provides a timeline with general phases without specific dates, a budget range without detailed components, or deliverables with general or vague descriptions.\n' +
+        '2 points: Mentions timeline, budget, and deliverables but lacks specific details, itemization, or clear alignment with project objectives.\n' +
+        '1 point: Does not mention timeline, budget, or deliverables.'
     )
 
   generator
-    .insertLine(`4. ${ProposalEvaluationCategories.Expertise}`)
+    .insertLine(`4. ${ProposalEvaluationCategories.Specialization}`)
     .insertLine(
-      "Expertise and experience in specific industry sectors or project types showcased. Demonstrating reliability through detailed examples of past performances. Presentation of the portfolio in a way that appeals to the client's needs in satisfying requirements. Clear explanation of expertise superiority over competitors."
+      '4 points: Showcases highly relevant industry expertise with detailed examples and outcomes directly related to the project requirements.\n' +
+        '3 points: Mentions relevant industry expertise with an example and related experiences, or mentions differentiation points from competition.\n' +
+        '2 points: Briefly mentions industry expertise without specific examples or experiences .\n' +
+        '1 point: Does not mention industry expertise or experience.'
     )
 
   generator
-    .insertLine(`5. ${ProposalEvaluationCategories.Differentiation}`)
+    .insertLine(`5. ${ProposalEvaluationCategories.AdditionalValue}`)
     .insertLine(
-      'Proposed methods for effective collaboration within the client organization. (Plans and methods for maintaining ongoing communication with the client during the project.) , Additional value proposed if pricing competitiveness is low, such as after-sales service or future discounts.'
+      '4 points: Includes at least 1 benefit and a detailed collaboration plan outlining specific communication methods and frequencies.\n' +
+        '3 points: Provides at least 1 benefit and a simple collaboration plan with some communication details.\n' +
+        '2 points: Mentions additional value or collaboration generally, lacking detail on specific methods or structured plans.\n' +
+        '1 point: Does not mention additional value or collaboration strategies.'
     )
 
   generator
     .insertLine(`6. ${ProposalEvaluationCategories.Readability}`)
     .insertLine(
-      '6-1. Proposal length: the number of pages considering total content volume, complexity, and target audience. (a4 5-7 page is proper)'
+      '4 points: Document uses concise sentences (15-20 words), simple language, and is well-structured for easy navigation.\n' +
+        '3 points: Features slightly longer sentences (21-25 words), some complex terms, with generally good structure.\n' +
+        '2 points: Includes longer sentences (26-30 words), complex language, and has dense content.\n' +
+        '1 point: Comprises overly long sentences (over 30 words), dense paragraphs, and poor structure, making it hard to read.'
     )
 
   return generator.toString()

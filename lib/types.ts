@@ -64,8 +64,8 @@ export const ProposalEvaluationCategories = {
   Background: 'Background',
   Goal: 'Goal',
   Specificity: 'Specificity',
-  Expertise: 'Expertise',
-  Differentiation: 'Differentiation',
+  Specialization: 'Specialization',
+  AdditionalValue: 'Additional Value',
   Readability: 'Readability'
 } as const
 

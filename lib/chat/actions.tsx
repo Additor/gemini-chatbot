@@ -203,15 +203,7 @@ async function submitMessageToImprovementModel(
           {
             id: nanoid(),
             role: 'assistant',
-            content: textContent.guideText,
-            display: (
-              <>
-                {/*<BotMessage content={textContent.guideText} />*/}
-                <BotCard>
-                  <ImprovementResult markdown={textContent.markdown} />
-                </BotCard>
-              </>
-            )
+            content: textContent.guideText
           }
         ]
       })

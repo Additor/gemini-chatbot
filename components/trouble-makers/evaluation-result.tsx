@@ -120,11 +120,31 @@ export function EvaluationResult({
   }
 
   const handleClickImprove = async (): Promise<void> => {
+    const checkedCategories = Object.entries(proposalEvaluation.data)
+      .filter(([key, value]) => {
+        return value.shouldImprove
+      })
+      .map(([key, value]) => key)
+
+    const settings = Object.entries(improvementParams)
+      .filter(([key, value]) => {
+        return typeof value === 'string'
+      })
+      .map(([key, value]) => value)
+
     setMessages(currentMessages => [
       ...currentMessages,
       {
         id: nanoid(),
-        display: <UserMessage>{IMPROVE_MESSAGE}</UserMessage>
+        display: (
+          <UserMessage>
+            <b>{IMPROVE_MESSAGE}</b>
+            <ul>
+              <li>- Categories: {checkedCategories.join(', ')}</li>
+              <li>- Settings: {settings.join(', ')}</li>
+            </ul>
+          </UserMessage>
+        )
       }
     ])
 
@@ -138,7 +158,7 @@ export function EvaluationResult({
       )
 
       setMessages(currentMessages => [...currentMessages, responseMessage])
-    } catch {
+    } catch (e) {
       toast(
         <div className="text-red-600">
           You have reached your message limit! Please try again later.
