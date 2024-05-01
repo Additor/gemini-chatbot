@@ -70,14 +70,12 @@ async function submitMessageToEvaluationModel(
   await (async () => {
     try {
       const textContent = await doEvaluate({
-        content: {
-          proposalFromUser: content
-        }
+        proposalFromUser: content
       })
 
       spinnerStream.done(null)
 
-      messageStream.update(<BotMessage content={textContent} />)
+      messageStream.update(<BotMessage content={textContent.guideText} />)
 
       aiState.update({
         ...aiState.get(),
@@ -86,7 +84,7 @@ async function submitMessageToEvaluationModel(
           {
             id: nanoid(),
             role: 'assistant',
-            content: textContent
+            content: textContent.guideText
           }
         ]
       })

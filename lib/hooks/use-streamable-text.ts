@@ -5,7 +5,7 @@ export const useStreamableText = (
   content: string | StreamableValue<string>
 ) => {
   const [rawContent, setRawContent] = useState(
-    typeof content === 'string' ? content : ''
+    typeof content === 'string' ? content : '[empty]'
   )
 
   useEffect(() => {

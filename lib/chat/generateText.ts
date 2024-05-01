@@ -58,11 +58,17 @@ async function requestToGenerateText({
     }
   }
 
+  console.info('=== Generating Text Started ===')
+  console.info('- Prompt: \n', prompt)
+
   const result = await experimental_generateText({
     model,
     temperature: 0,
     prompt
   })
+
+  console.info('- Result: \n', result.text)
+  console.info('=== Generating Text Ended ===')
 
   return result.text
 }

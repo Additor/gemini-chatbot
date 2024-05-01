@@ -2,8 +2,8 @@ import { ProposalEvaluation } from '@/lib/types'
 
 export type EvaluationContent = {
   proposalFromUser: string
-  context: string
-  scoringCriteria: string
+  context?: string
+  scoringCriteria?: string
 }
 
 export type EvaluationParams = {
