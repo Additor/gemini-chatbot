@@ -78,7 +78,16 @@ async function submitMessageToEvaluationModel(
 
       spinnerStream.done(null)
 
-      messageStream.update(<BotMessage content={textContent.guideText} />)
+      messageStream.update(
+        <>
+          <BotMessage content={textContent.guideText} />
+          <BotCard>
+            <EvaluationResult
+              proposalEvaluation={message.display.props.proposalEvaluation}
+            />
+          </BotCard>
+        </>
+      )
 
       aiState.update({
         ...aiState.get(),
@@ -166,7 +175,14 @@ async function submitMessageToImprovementModel(
 
       spinnerStream.done(null)
 
-      messageStream.update(<BotMessage content={textContent.guideText} />)
+      messageStream.update(
+        <>
+          <BotMessage content={textContent.guideText} />
+          <BotCard>
+            <ImprovementResult markdown={message.display.props.markdown} />
+          </BotCard>
+        </>
+      )
 
       aiState.update({
         ...aiState.get(),
