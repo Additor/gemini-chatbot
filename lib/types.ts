@@ -55,7 +55,7 @@ export const Tones = {
   Friendly: 'Friendly',
   'Problem-Solving': 'Problem-Solving',
   Trustworthy: 'Trustworthy',
-  Ambitiou: 'Ambitious'
+  Ambitious: 'Ambitious'
 } as const
 
 export type Tone = keyof typeof Tones

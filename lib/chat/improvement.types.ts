@@ -6,8 +6,8 @@ export type ImprovementContent = {
 
 export type ImprovementParams = {
   exact?: boolean
-  tone: Tone
-  textLength: TextLength
+  tone?: Tone
+  textLength?: TextLength
 }
 
 export type ImprovementReturns = {

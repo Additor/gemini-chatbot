@@ -28,6 +28,7 @@ import { Destinations } from '@/components/flights/destinations'
 import { rateLimit } from './ratelimit'
 import { EvaluationParams } from '@/lib/chat/evaluation.types'
 import { doEvaluate } from './evaluation.action'
+import { ImprovementParams } from './improvement.types'
 import { doImprove } from './improvement.action'
 
 async function submitMessageToEvaluationModel(
