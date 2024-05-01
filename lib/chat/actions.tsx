@@ -71,12 +71,16 @@ async function submitMessageToEvaluationModel(
   const uiStream = createStreamableUI()
 
   await (async () => {
+    const currentAIState = aiState.get()
     try {
       const textContent = await doEvaluate(
         {
-          proposalFromUser: content
+          proposalContent: content
         },
-        params
+        {
+          ...(params || {}),
+          customModelId: currentAIState.customModels?.evaluationModelId
+        }
       )
 
       spinnerStream.done(null)
@@ -91,7 +95,7 @@ async function submitMessageToEvaluationModel(
       )
 
       aiState.update({
-        ...aiState.get(),
+        ...currentAIState,
         originalProposalContent: content,
         messages: [
           ...aiState.get().messages,
@@ -173,9 +177,12 @@ async function submitMessageToImprovementModel(
     try {
       const textContent = await doImprove(
         {
-          proposalData: currentAIState.originalProposalContent
+          proposalContent: currentAIState.originalProposalContent
         },
-        params
+        {
+          ...(params || {}),
+          customModelId: currentAIState.customModels?.improvementModelId
+        }
       )
 
       spinnerStream.done(null)
@@ -197,12 +204,14 @@ async function submitMessageToImprovementModel(
             id: nanoid(),
             role: 'assistant',
             content: textContent.guideText,
-            display: {
-              name: 'improvementResult',
-              props: {
-                markdown: textContent.markdown
-              }
-            }
+            display: (
+              <>
+                {/*<BotMessage content={textContent.guideText} />*/}
+                <BotCard>
+                  <ImprovementResult markdown={textContent.markdown} />
+                </BotCard>
+              </>
+            )
           }
         ]
       })

@@ -39,12 +39,15 @@ import { UserMessage } from '../stocks/message'
 import { toast } from 'sonner'
 import { ImprovementParams } from '@/lib/chat/improvement.types'
 
+const MIN_SCORE = 1
+const MAX_SCORE = 4
+
 function getOverallScoreLabel(overallScore: number): string {
-  if (overallScore >= 4) {
+  if (overallScore >= MAX_SCORE - 1) {
     return 'Good'
   }
 
-  if (overallScore >= 3) {
+  if (overallScore >= MAX_SCORE - 2) {
     return 'Moderate'
   }
 
@@ -150,7 +153,7 @@ export function EvaluationResult({
         <h6>Overall score</h6>
         <div className="flex gap-4">
           <h1 className="text-2xl sm:text-3xl tracking-tight font-semibold max-w-fit inline-block">
-            {proposalEvaluation.overallScore} / 5
+            {proposalEvaluation.overallScore} / {MAX_SCORE}
           </h1>
           <Badge variant="secondary">
             {getOverallScoreLabel(proposalEvaluation.overallScore)}
@@ -187,7 +190,9 @@ export function EvaluationResult({
                       />
                     </TableCell>
                     <TableCell className="font-medium">{category}</TableCell>
-                    <TableCell className="font-medium">{score} / 5</TableCell>
+                    <TableCell className="font-medium">
+                      {score} / {MAX_SCORE}
+                    </TableCell>
                     <TableCell>{description}</TableCell>
                   </TableRow>
                 )

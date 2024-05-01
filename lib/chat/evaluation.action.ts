@@ -9,9 +9,11 @@ import { ProposalEvaluationCategories } from '@/lib/types'
 
 export async function doEvaluate(
   content: EvaluationContent,
-  params?: EvaluationParams
+  params: EvaluationParams
 ): Promise<EvaluationReturns> {
-  const tunedModelId = `tunedModels/${process.env.EVALUATION_TUNED_MODEL_ID}`
+  const { customModelId } = params
+
+  const tunedModelId = `tunedModels/${customModelId || process.env.EVALUATION_TUNED_MODEL_ID}`
 
   console.log(`doEvaluate():`, { tunedModelId }, params)
 
@@ -30,7 +32,7 @@ export async function doEvaluate(
         data: {
           '{{criteria}}': {
             shouldImprove: false,
-            score: 5,
+            score: 4,
             description: '{{reason for the score}}'
           }
         }
@@ -41,25 +43,26 @@ export async function doEvaluate(
   generator
     .insertEmptyLine()
     .insertLine('This is a proposal content:')
-    .insertLine('===')
-    .insertLine(content.proposalFromUser)
-    .insertLine('===')
-
-  generator
-    .insertEmptyLine()
-    .insertLine(
-      'This is context of the proposal. Try to consider this on the content:'
-    )
-    .insertLine('===')
-    .insertLine(content.context || defaultContext())
-    .insertLine('===')
+    .insertLine('---')
+    .insertLine(content.proposalContent)
+    .insertLine('---')
 
   generator
     .insertEmptyLine()
     .insertLine('This is the scoring criteria for the proposal.')
-    .insertLine('===')
+    .insertLine('The score should be a number between 1 to 4.')
+    .insertLine('---')
     .insertLine(content.scoringCriteria || defaultScoringCriteria())
-    .insertLine('===')
+    .insertLine('---')
+
+  // generator
+  //   .insertEmptyLine()
+  //   .insertLine(
+  //     'This is context of the proposal. Try to consider this on the content:'
+  //   )
+  //   .insertLine('---')
+  //   .insertLine(content.context || defaultContext())
+  //   .insertLine('---')
 
   const textContent = await generateTextContents({
     modelId: tunedModelId,
@@ -77,7 +80,7 @@ function defaultContext(): string {
 
 function defaultScoringCriteria(): string {
   const generator = PromptGenerator.generate()
-  // 1. Background
+
   generator
     .insertLine(`1. ${ProposalEvaluationCategories.Background}`)
     .insertLine(
@@ -135,24 +138,7 @@ function parseResult(result: string): EvaluationReturns {
   const evaluation = JSON.parse(jsonContent) as EvaluationReturns['evaluation']
 
   return {
-    guideText: 'Evaluation 결과입니다:\n' + result,
+    guideText: result,
     evaluation
   }
 }
-
-//
-// """Background""","""3""","""you need to add more context about your client's goal."""
-// """Goal""","""4""","""Goals clear, but success criteria could be more detailed."""
-//
-//
-// """Specificity""","""3""","""Specific but lacks some innovative approaches."""
-//
-//
-// """Specialization""","""1""","""Expertise in UX/UI shown, broader skills not demonstrated."""
-//
-//
-// """Additional value""","""1""","""Lacks unique offerings beyond basic improvements."""
-//
-//
-// """Readability""","""3""","""Adequate detail but misses strategic depth."""
-//
