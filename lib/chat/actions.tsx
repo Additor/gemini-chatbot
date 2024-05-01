@@ -297,21 +297,15 @@ export const getUIStateFromAIState = (aiState: Chat) => {
       display:
         message.role === 'assistant' ? (
           message.display?.name === 'evaluationResult' ? (
-            <>
-              {/* <BotMessage content={message.content} /> */}
-              <BotCard>
-                <EvaluationResult
-                  proposalEvaluation={message.display.props.proposalEvaluation}
-                />
-              </BotCard>
-            </>
+            <BotCard>
+              <EvaluationResult
+                proposalEvaluation={message.display.props.proposalEvaluation}
+              />
+            </BotCard>
           ) : message.display?.name === 'improvementResult' ? (
-            <>
-              {/* <BotMessage content={message.content} /> */}
-              <BotCard>
-                <ImprovementResult markdown={message.display.props.markdown} />
-              </BotCard>
-            </>
+            <BotCard>
+              <ImprovementResult markdown={message.display.props.markdown} />
+            </BotCard>
           ) : (
             <BotMessage content={message.content} />
           )

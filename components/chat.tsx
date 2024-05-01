@@ -71,11 +71,7 @@ export function Chat({
     >
       <div className={cn('pb-[200px] pt-4', className)} ref={messagesRef}>
         {messages.length ? (
-          <ChatList
-            messages={uiState ?? messages}
-            isShared={false}
-            session={session}
-          />
+          <ChatList messages={messages} isShared={false} session={session} />
         ) : (
           <EmptyScreen />
         )}
