@@ -3,9 +3,7 @@
 import { ChatList } from '@/components/chat-list'
 import { ChatPanel } from '@/components/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
-import { ListFlights } from '@/components/flights/list-flights'
-import { ListHotels } from '@/components/hotels/list-hotels'
-import { Message } from '@/lib/chat/actions'
+import { Message, UIState, getUIStateFromAIState } from '@/lib/chat/actions'
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 import { useScrollAnchor } from '@/lib/hooks/use-scroll-anchor'
 import { Session } from '@/lib/types'
@@ -20,9 +18,16 @@ export interface ChatProps extends React.ComponentProps<'div'> {
   id?: string
   session?: Session
   missingKeys: string[]
+  uiState?: UIState
 }
 
-export function Chat({ id, className, session, missingKeys }: ChatProps) {
+export function Chat({
+  id,
+  className,
+  session,
+  missingKeys,
+  uiState
+}: ChatProps) {
   const router = useRouter()
   const path = usePathname()
   const [input, setInput] = useState('')
@@ -66,7 +71,11 @@ export function Chat({ id, className, session, missingKeys }: ChatProps) {
     >
       <div className={cn('pb-[200px] pt-4', className)} ref={messagesRef}>
         {messages.length ? (
-          <ChatList messages={messages} isShared={false} session={session} />
+          <ChatList
+            messages={uiState ?? messages}
+            isShared={false}
+            session={session}
+          />
         ) : (
           <EmptyScreen />
         )}

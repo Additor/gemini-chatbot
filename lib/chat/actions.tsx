@@ -175,7 +175,7 @@ async function submitMessageToImprovementModel(
           {
             id: nanoid(),
             role: 'assistant',
-            content: textContent,
+            content: textContent.guideText,
             display: {
               name: 'improvementResult',
               props: {
