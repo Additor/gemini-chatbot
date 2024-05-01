@@ -8,7 +8,7 @@ import { PromptGenerator } from '@/lib/chat/PromptGenerator'
 
 export async function doImprove(
   content: ImprovementContent,
-  params: ImprovementParams
+  params?: ImprovementParams
 ): Promise<ImprovementReturns> {
   const tunedModelId = `tunedModels/${process.env.IMPROVEMENT_TUNED_MODEL_ID}`
 
@@ -41,8 +41,8 @@ export async function doImprove(
     .insertEmptyLine()
     .insertLine('Factors to be improved:')
     .insertLine('===')
-    .insertLine(`- Text Length: ${params.textLength}`)
-    .insertLine(`- Tone: ${params.tone}`)
+    .insertLine(`- Text Length: ${params?.textLength}`)
+    .insertLine(`- Tone: ${params?.tone}`)
     .insertLine('===')
 
   const textContent = await generateTextContents({

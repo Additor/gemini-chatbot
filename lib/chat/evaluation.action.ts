@@ -9,7 +9,7 @@ import { ProposalEvaluationCategories } from '@/lib/types'
 
 export async function doEvaluate(
   content: EvaluationContent,
-  params: EvaluationParams
+  params?: EvaluationParams
 ): Promise<EvaluationReturns> {
   const tunedModelId = `tunedModels/${process.env.EVALUATION_TUNED_MODEL_ID}`
 

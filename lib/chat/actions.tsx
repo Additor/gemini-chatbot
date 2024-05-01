@@ -72,9 +72,12 @@ async function submitMessageToEvaluationModel(
 
   await (async () => {
     try {
-      const textContent = await doEvaluate({
-        proposalFromUser: content
-      })
+      const textContent = await doEvaluate(
+        {
+          proposalFromUser: content
+        },
+        params
+      )
 
       spinnerStream.done(null)
 
@@ -82,9 +85,7 @@ async function submitMessageToEvaluationModel(
         <>
           <BotMessage content={textContent.guideText} />
           <BotCard>
-            <EvaluationResult
-              proposalEvaluation={message.display.props.proposalEvaluation}
-            />
+            <EvaluationResult proposalEvaluation={textContent.evaluation} />
           </BotCard>
         </>
       )
@@ -160,18 +161,19 @@ async function submitMessageToImprovementModel(
 
   const textStream = createStreamableValue('')
   const spinnerStream = createStreamableUI(
-    exact ? <ImprovementSpinnerMessage /> : <SpinnerMessage />
+    params.exact ? <ImprovementSpinnerMessage /> : <SpinnerMessage />
   )
   const messageStream = createStreamableUI(null)
   const uiStream = createStreamableUI()
 
   await (async () => {
     try {
-      const textContent = await doImprove({
-        content: {
+      const textContent = await doImprove(
+        {
           proposalFromUser: content
-        }
-      })
+        },
+        params
+      )
 
       spinnerStream.done(null)
 
@@ -179,7 +181,7 @@ async function submitMessageToImprovementModel(
         <>
           <BotMessage content={textContent.guideText} />
           <BotCard>
-            <ImprovementResult markdown={message.display.props.markdown} />
+            <ImprovementResult markdown={textContent.markdown} />
           </BotCard>
         </>
       )
