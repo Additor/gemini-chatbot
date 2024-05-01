@@ -83,7 +83,7 @@ async function submitMessageToEvaluationModel(
 
       messageStream.update(
         <>
-          <BotMessage content={textContent.guideText} />
+          {/*<BotMessage content={textContent.guideText} />*/}
           <BotCard>
             <EvaluationResult proposalEvaluation={textContent.evaluation} />
           </BotCard>
@@ -170,7 +170,6 @@ async function submitMessageToImprovementModel(
 
   await (async () => {
     const currentAIState = aiState.get()
-    console.log(currentAIState)
     try {
       const textContent = await doImprove(
         {
@@ -183,7 +182,7 @@ async function submitMessageToImprovementModel(
 
       messageStream.update(
         <>
-          <BotMessage content={textContent.guideText} />
+          {/*<BotMessage content={textContent.guideText} />*/}
           <BotCard>
             <ImprovementResult markdown={textContent.markdown} />
           </BotCard>
