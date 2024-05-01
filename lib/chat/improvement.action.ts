@@ -71,7 +71,7 @@ function parseResult(result: string): ImprovementReturns {
   const { markdown } = JSON.parse(jsonContent) as ImprovementReturns
 
   return {
-    guideText: '',
+    guideText: 'Improvement 결과입니다:\n' + result,
     markdown
   }
 }

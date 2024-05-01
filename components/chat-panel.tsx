@@ -36,16 +36,19 @@ export function ChatPanel({
   const { submitMessageToEvaluationModel } = useActions()
   const [shareDialogOpen, setShareDialogOpen] = React.useState(false)
 
+  const sampleProposalDocument =
+    'Project Overview The project aims to redesign the e-commerce platform, including a mobile application for iOS and Android. The main goal is to enhance user experience and interface, improve product discovery, simplify the checkout process, and increase overall customer satisfaction and sales. The project timeline is approximately 4 months, starting from June to September 2023. Scope of the Project A comprehensive redesign of the existing website Design an intuitive mobile application for both iOS and Android platforms Integration of real-time inventory updates Implementation of user-friendly features such as simplified account creation, improved product discovery, streamlined shopping cart and checkout process, reliable order tracking, and efficient customer support. Milestones Video Graphics: Jan 11, 2024 - Jan 19, 2024 Create video graphics Live screen into 3D view Background graphics & images Designer text formats Video Animation: Jan 8, 2024 - Jan 15, 2024 Create the animation using the graphics Normal fade-in and fade-out for texts show the 3D live screens in a book formatted animation Deliverables Video Graphics / 1 / Need to design the graphics which are to be used in the video Video Animation / 1 / Need to arrange designs and texts to animate them in elegant way'
   const exampleMessages = [
     {
-      heading: 'List flights flying from',
-      subheading: 'San Francisco to Rome today',
-      message: 'List flights flying from San Francisco to Rome today'
+      heading: 'Proposal Evaluation',
+      subheading:
+        'informs you results of the evaluation from submitted proposal document',
+      message: sampleProposalDocument
     },
     {
-      heading: 'What is the status',
-      subheading: 'of flight BA142?',
-      message: 'What is the status of flight BA142?'
+      heading: 'Proposal Improvement (WIP)',
+      subheading: 'improves your proposal document based on the evaluation',
+      message: 'Something went wrong?'
     }
   ]
 

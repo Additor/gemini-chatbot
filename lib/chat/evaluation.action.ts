@@ -135,7 +135,7 @@ function parseResult(result: string): EvaluationReturns {
   const evaluation = JSON.parse(jsonContent) as EvaluationReturns['evaluation']
 
   return {
-    guideText: result,
+    guideText: 'Evaluation 결과입니다:\n' + result,
     evaluation
   }
 }
