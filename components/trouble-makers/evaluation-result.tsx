@@ -1,3 +1,4 @@
+'use client'
 import {
   Table,
   TableBody,
@@ -26,7 +27,6 @@ import { Children, useState } from 'react'
 import {
   ProposalEvaluation,
   ProposalEvaluationCategory,
-  ProposalEvaluationData,
   TextLength,
   TextLengths,
   Tone,

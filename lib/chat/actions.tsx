@@ -30,6 +30,8 @@ import { EvaluationParams } from '@/lib/chat/evaluation.types'
 import { doEvaluate } from './evaluation.action'
 import { ImprovementParams } from './improvement.types'
 import { doImprove } from './improvement.action'
+import { EvaluationResult } from '@/components/trouble-makers/evaluation-result'
+import { ImprovementResult } from '@/components/trouble-makers/improvement-result'
 
 async function submitMessageToEvaluationModel(
   content: string,
@@ -85,7 +87,13 @@ async function submitMessageToEvaluationModel(
           {
             id: nanoid(),
             role: 'assistant',
-            content: textContent.guideText
+            content: textContent.guideText,
+            display: {
+              name: 'evaluationResult',
+              props: {
+                proposalEvaluation: textContent.evaluation
+              }
+            }
           }
         ]
       })
@@ -158,7 +166,7 @@ async function submitMessageToImprovementModel(
 
       spinnerStream.done(null)
 
-      messageStream.update(<BotMessage content={textContent} />)
+      messageStream.update(<BotMessage content={textContent.guideText} />)
 
       aiState.update({
         ...aiState.get(),
@@ -167,7 +175,13 @@ async function submitMessageToImprovementModel(
           {
             id: nanoid(),
             role: 'assistant',
-            content: textContent
+            content: textContent,
+            display: {
+              name: 'improvementResult',
+              props: {
+                markdown: textContent.markdown
+              }
+            }
           }
         ]
       })
@@ -282,30 +296,22 @@ export const getUIStateFromAIState = (aiState: Chat) => {
       id: `${aiState.chatId}-${index}`,
       display:
         message.role === 'assistant' ? (
-          message.display?.name === 'showFlights' ? (
-            <BotCard>
-              <ListFlights summary={message.display.props.summary} />
-            </BotCard>
-          ) : message.display?.name === 'showSeatPicker' ? (
-            <BotCard>
-              <SelectSeats summary={message.display.props.summary} />
-            </BotCard>
-          ) : message.display?.name === 'showHotels' ? (
-            <BotCard>
-              <ListHotels />
-            </BotCard>
-          ) : message.content === 'The purchase has completed successfully.' ? (
-            <BotCard>
-              <PurchaseTickets status="expired" />
-            </BotCard>
-          ) : message.display?.name === 'showBoardingPass' ? (
-            <BotCard>
-              <BoardingPass summary={message.display.props.summary} />
-            </BotCard>
-          ) : message.display?.name === 'listDestinations' ? (
-            <BotCard>
-              <Destinations destinations={message.display.props.destinations} />
-            </BotCard>
+          message.display?.name === 'evaluationResult' ? (
+            <>
+              {/* <BotMessage content={message.content} /> */}
+              <BotCard>
+                <EvaluationResult
+                  proposalEvaluation={message.display.props.proposalEvaluation}
+                />
+              </BotCard>
+            </>
+          ) : message.display?.name === 'improvementResult' ? (
+            <>
+              {/* <BotMessage content={message.content} /> */}
+              <BotCard>
+                <ImprovementResult markdown={message.display.props.markdown} />
+              </BotCard>
+            </>
           ) : (
             <BotMessage content={message.content} />
           )
