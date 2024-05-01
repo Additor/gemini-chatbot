@@ -1,10 +1,10 @@
 import { type Metadata } from 'next'
 
-import {nanoid} from '@/lib/utils'
-import {getMissingKeys} from '@/app/actions'
+import { nanoid } from '@/lib/utils'
+import { getMissingKeys } from '@/app/actions'
 import { AI } from '@/lib/chat/actions'
-import {Chat} from "@/components/chat";
-import {Badge} from "@/components/ui/badge";
+import { Chat } from '@/components/chat'
+import { Badge } from '@/components/ui/badge'
 
 interface ModelPageProps {
   params: {
@@ -24,7 +24,7 @@ export default async function TunedModelPage({ params }: ModelPageProps) {
   const id = nanoid()
   const missingKeys = await getMissingKeys()
 
-  const modelId = params.modelId;
+  const modelId = params.modelId
   return (
     <>
       <div className="mx-auto max-w-2xl">
@@ -35,15 +35,24 @@ export default async function TunedModelPage({ params }: ModelPageProps) {
           <div className="flex gap-4">
             <div className="text-sm text-zinc-600">
               Model ID:
-              <Badge variant="secondary">
-                tunedModels/{params.modelId}
-              </Badge>
+              <Badge variant="secondary">tunedModels/{params.modelId}</Badge>
             </div>
           </div>
         </div>
       </div>
 
-      <AI initialAIState={{ chatId: id, interactions: [], messages: [], modelId }}>
+      <AI
+        initialAIState={{
+          chatId: id,
+          interactions: [],
+          messages: [],
+          originalProposalContent: null,
+          customModels: {
+            evaluationModelId: modelId,
+            improvementModelId: modelId
+          }
+        }}
+      >
         <Chat id={id} missingKeys={missingKeys} />
       </AI>
     </>

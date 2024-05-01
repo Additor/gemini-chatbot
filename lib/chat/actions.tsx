@@ -92,6 +92,7 @@ async function submitMessageToEvaluationModel(
 
       aiState.update({
         ...aiState.get(),
+        originalProposalContent: content,
         messages: [
           ...aiState.get().messages,
           {
@@ -117,6 +118,7 @@ async function submitMessageToEvaluationModel(
       uiStream.error(error)
       textStream.error(error)
       messageStream.error(error)
+    } finally {
       aiState.done()
     }
   })()
@@ -135,7 +137,7 @@ async function submitMessageToImprovementModel(
 ) {
   'use server'
 
-  console.log(`submitMessageToImprovementModel(${content})`)
+  console.log(`submitMessageToImprovementModel(${content})`, params)
 
   await rateLimit()
 
@@ -167,10 +169,12 @@ async function submitMessageToImprovementModel(
   const uiStream = createStreamableUI()
 
   await (async () => {
+    const currentAIState = aiState.get()
+    console.log(currentAIState)
     try {
       const textContent = await doImprove(
         {
-          proposalFromUser: content
+          proposalData: currentAIState.originalProposalContent
         },
         params
       )
@@ -213,6 +217,7 @@ async function submitMessageToImprovementModel(
       uiStream.error(error)
       textStream.error(error)
       messageStream.error(error)
+    } finally {
       aiState.done()
     }
   })()
@@ -238,9 +243,14 @@ export type Message = {
 
 export type AIState = {
   chatId: string
-  modelId: string
   interactions?: string[]
   messages: Message[]
+  originalProposalContent: string | null
+
+  customModels?: {
+    evaluationModelId?: string
+    improvementModelId?: string
+  }
 }
 
 export type UIState = {
@@ -260,7 +270,7 @@ export const AI = createAI<AIState, UIState>({
     chatId: nanoid(),
     interactions: [],
     messages: [],
-    modelId: ''
+    originalProposalContent: null
   },
   unstable_onGetUIState: async () => {
     'use server'

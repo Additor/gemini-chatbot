@@ -20,7 +20,7 @@ export default async function IndexPage() {
         chatId: id,
         interactions: [],
         messages: [],
-        modelId: ''
+        originalProposalContent: null
       }}
     >
       <Chat id={id} session={session} missingKeys={missingKeys} />
