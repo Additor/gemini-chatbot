@@ -21,6 +21,13 @@ export async function doImprove(
     .insertLine(
       'Your mission is helping to improve submitted proposal content with improving factors according to the given scoring criteria.'
     )
+    .insertLine(
+      'Strive to improve to a perfect score on selected evaluation criteria.'
+    )
+    .insertLine(
+      'Before providing content, ensure the improved proposal is professional, and optimized to achieve the highest possible evaluation scores and win rates. If the score dropped, try improving again the content again instead of providing it.'
+    )
+    .insertLine('ONLY PROVIDE AN IMPROVED PROPOSAL!')
 
   generator.insertLine('Format the output by markdown.')
 
