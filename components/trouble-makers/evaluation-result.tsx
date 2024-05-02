@@ -192,7 +192,7 @@ export function EvaluationResult({
             </TableHead>
             <TableHead className="w-[90px]">Category</TableHead>
             <TableHead className="w-[60px]">Score</TableHead>
-            <TableHead>Amount</TableHead>
+            <TableHead>Description</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
