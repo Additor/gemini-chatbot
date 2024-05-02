@@ -48,8 +48,8 @@ function getOverallScoreLabel(overallScore: number): string {
     return 'Good'
   }
 
-  if (overallScore >= MAX_SCORE - 2) {
-    return 'Moderate'
+  if (overallScore >= MAX_SCORE - 2.5) {
+    return 'Medium'
   }
 
   return 'Bad'
@@ -170,16 +170,23 @@ export function EvaluationResult({
     }
   }
 
+  const scoreSum = tableData.reduce(
+    (acc, [category, { score, description, shouldImprove }]) => {
+      acc += score
+      return acc
+    },
+    0
+  )
+  const avgScore = Math.ceil((scoreSum * 10) / tableData.length) / 10
+
   return (
     <div className="flex flex-col gap-2">
       <h6>Overall score</h6>
       <div className="flex gap-4">
         <h1 className="text-2xl sm:text-3xl tracking-tight font-semibold max-w-fit inline-block">
-          {proposalEvaluation.overallScore} / {MAX_SCORE}
+          {avgScore} / {MAX_SCORE}
         </h1>
-        <Badge variant="secondary">
-          {getOverallScoreLabel(proposalEvaluation.overallScore)}
-        </Badge>
+        <Badge variant="secondary">{getOverallScoreLabel(avgScore)}</Badge>
       </div>
       <Table>
         <TableHeader>
