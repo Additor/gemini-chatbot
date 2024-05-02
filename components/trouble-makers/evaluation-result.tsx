@@ -68,9 +68,14 @@ export function EvaluationResult({
   const [proposalEvaluation, setProposalEvaluation] = useState(
     proposalEvaluationProp
   )
-  const [improvementParams, setImprovementParams] = useState<
-    ImprovementParams | undefined
-  >(undefined)
+  const [improvementParams, setImprovementParams] = useState<ImprovementParams>(
+    {
+      // Default Value
+      tone: Tones.Innovative,
+      textLength: TextLengths.Moderate
+    }
+  )
+
   const tableData = Object.entries(proposalEvaluation.data)
   const isAllChecked = tableData.every(([, { shouldImprove }]) => shouldImprove)
 
