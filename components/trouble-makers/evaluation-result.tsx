@@ -126,7 +126,9 @@ export function EvaluationResult({
       })
       .map(([key, value]) => key)
 
-    const settings = Object.entries(improvementParams)
+    const settings = Object.entries<ImprovementParams[keyof ImprovementParams]>(
+      improvementParams || {}
+    )
       .filter(([key, value]) => {
         return typeof value === 'string'
       })
