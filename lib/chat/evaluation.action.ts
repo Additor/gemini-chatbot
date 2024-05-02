@@ -156,7 +156,7 @@ function parseResult(result: string): EvaluationReturns {
   const evaluation = JSON.parse(jsonContent) as EvaluationReturns['evaluation']
 
   return {
-    guideText: result,
+    guideText: `Review the evaluation result of your proposal.\nSelect improvements to enhance your proposal!`,
     evaluation
   }
 }

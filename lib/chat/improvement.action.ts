@@ -49,7 +49,7 @@ export async function doImprove(
 
 function parseResult(markdown: string): ImprovementReturns {
   return {
-    guideText: '',
+    guideText: 'Here is the improved version!✨',
     markdown: markdown
   }
 }

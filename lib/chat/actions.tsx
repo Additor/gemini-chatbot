@@ -19,12 +19,6 @@ import {
 } from '@/components/stocks/message'
 import { Chat } from '../types'
 import { auth } from '@/auth'
-import { SelectSeats } from '@/components/flights/select-seats'
-import { ListFlights } from '@/components/flights/list-flights'
-import { BoardingPass } from '@/components/flights/boarding-pass'
-import { PurchaseTickets } from '@/components/flights/purchase-ticket'
-import { ListHotels } from '@/components/hotels/list-hotels'
-import { Destinations } from '@/components/flights/destinations'
 import { rateLimit } from './ratelimit'
 import { EvaluationParams } from '@/lib/chat/evaluation.types'
 import { doEvaluate } from './evaluation.action'
@@ -86,17 +80,18 @@ async function submitMessageToEvaluationModel(
       spinnerStream.done(null)
 
       messageStream.update(
-        <>
-          {/*<BotMessage content={textContent.guideText} />*/}
-          <BotCard>
+        <BotMessage
+          content={textContent.guideText}
+          richContent={
             <EvaluationResult proposalEvaluation={textContent.evaluation} />
-          </BotCard>
-        </>
+          }
+        />
       )
 
       aiState.update({
         ...currentAIState,
         originalProposalContent: content,
+        evaluationParams: params,
         messages: [
           ...aiState.get().messages,
           {
@@ -188,16 +183,15 @@ async function submitMessageToImprovementModel(
       spinnerStream.done(null)
 
       messageStream.update(
-        <>
-          {/*<BotMessage content={textContent.guideText} />*/}
-          <BotCard>
-            <ImprovementResult markdown={textContent.markdown} />
-          </BotCard>
-        </>
+        <BotMessage
+          content={textContent.guideText}
+          richContent={<ImprovementResult markdown={textContent.markdown} />}
+        />
       )
 
       aiState.update({
         ...aiState.get(),
+        improvementParams: params,
         messages: [
           ...aiState.get().messages,
           {
@@ -246,7 +240,8 @@ export type AIState = {
   interactions?: string[]
   messages: Message[]
   originalProposalContent: string | null
-
+  evaluationParams?: EvaluationParams
+  improvementParams?: ImprovementParams
   customModels?: {
     evaluationModelId?: string
     improvementModelId?: string
