@@ -161,9 +161,6 @@ async function submitMessageToImprovementModel(
   // console.log(history)
 
   const textStream = createStreamableValue('')
-  const spinnerStream = createStreamableUI(
-    params.exact ? <ImprovementSpinnerMessage /> : <SpinnerMessage />
-  )
   const messageStream = createStreamableUI(null)
   const uiStream = createStreamableUI()
 
@@ -179,8 +176,6 @@ async function submitMessageToImprovementModel(
           customModelId: currentAIState.customModels?.improvementModelId
         }
       )
-
-      spinnerStream.done(null)
 
       messageStream.update(
         <BotMessage
@@ -219,7 +214,6 @@ async function submitMessageToImprovementModel(
   return {
     id: nanoid(),
     attachments: uiStream.value,
-    spinner: spinnerStream.value,
     display: messageStream.value
   }
 }

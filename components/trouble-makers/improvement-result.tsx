@@ -9,8 +9,13 @@ import { CopyButton } from './copy-button'
 import { useAIState, useActions, useUIState } from 'ai/rsc'
 import { AI } from '@/lib/chat/actions'
 import { nanoid } from 'nanoid'
-import { UserMessage } from '../stocks/message'
+import {
+  EvaluationSpinnerMessage,
+  ImprovementSpinnerMessage,
+  UserMessage
+} from '../stocks/message'
 import { toast } from 'sonner'
+import * as React from 'react'
 
 const EVALUATE_MESSAGE = 'Evaluate the improved proposal.'
 const IMPROVE_MESSAGE = 'Regenerate the improved proposal.'
@@ -35,6 +40,10 @@ export function ImprovementResult({ markdown }: Props) {
             <b>{EVALUATE_MESSAGE}</b>
           </UserMessage>
         )
+      },
+      {
+        id: nanoid(),
+        display: <EvaluationSpinnerMessage />
       }
     ])
 
@@ -44,7 +53,10 @@ export function ImprovementResult({ markdown }: Props) {
         ...aiState.evaluationParams
       })
 
-      setMessages(currentMessages => [...currentMessages, responseMessage])
+      setMessages(currentMessages => [
+        ...currentMessages.slice(0, -1),
+        responseMessage
+      ])
     } catch (e) {
       toast(
         <div className="text-red-600">
@@ -64,6 +76,10 @@ export function ImprovementResult({ markdown }: Props) {
             <b>{IMPROVE_MESSAGE}</b>
           </UserMessage>
         )
+      },
+      {
+        id: nanoid(),
+        display: <ImprovementSpinnerMessage />
       }
     ])
 
@@ -76,7 +92,10 @@ export function ImprovementResult({ markdown }: Props) {
         }
       )
 
-      setMessages(currentMessages => [...currentMessages, responseMessage])
+      setMessages(currentMessages => [
+        ...currentMessages.slice(0, -1),
+        responseMessage
+      ])
     } catch (e) {
       toast(
         <div className="text-red-600">

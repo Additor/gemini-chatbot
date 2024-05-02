@@ -5,7 +5,11 @@ import Textarea from 'react-textarea-autosize'
 
 import { useActions, useUIState } from 'ai/rsc'
 
-import { UserMessage } from './stocks/message'
+import {
+  EvaluationSpinnerMessage,
+  SpinnerMessage,
+  UserMessage
+} from './stocks/message'
 import { type AI } from '@/lib/chat/actions'
 import { Button } from '@/components/ui/button'
 import { IconArrowElbow, IconPlus } from '@/components/ui/icons'
@@ -59,13 +63,20 @@ export function PromptForm({
           {
             id: nanoid(),
             display: <UserMessage>{value}</UserMessage>
+          },
+          {
+            id: nanoid(),
+            display: <EvaluationSpinnerMessage />
           }
         ])
 
         try {
           // Submit and get response message
           const responseMessage = await submitMessageToEvaluationModel(value)
-          setMessages(currentMessages => [...currentMessages, responseMessage])
+          setMessages(currentMessages => [
+            ...currentMessages.slice(0, -1),
+            responseMessage
+          ])
         } catch {
           toast(
             <div className="text-red-600">
@@ -87,13 +98,13 @@ export function PromptForm({
           }
         }}
       />
-      <div className="relative flex max-h-60 w-full grow flex-col overflow-hidden bg-zinc-100 px-12 sm:rounded-full sm:px-12">
+      <div className="relative flex max-h-60 w-full grow flex-col overflow-hidden bg-zinc-100 px-12 sm:rounded sm:px-12">
         {/* <Tooltip>
           <TooltipTrigger asChild> */}
         <Button
           variant="outline"
           size="icon"
-          className="absolute left-4 top-[14px] size-8 rounded-full bg-background p-0 sm:left-4"
+          className="absolute left-4 top-[14px] size-8 rounded bg-background p-0 sm:left-4"
           onClick={() => {
             fileRef.current?.click()
           }}
@@ -126,7 +137,7 @@ export function PromptForm({
                 type="submit"
                 size="icon"
                 disabled={input === ''}
-                className="bg-transparent shadow-none text-zinc-950 rounded-full hover:bg-zinc-200"
+                className="bg-transparent shadow-none text-zinc-950 rounded hover:bg-zinc-200"
               >
                 <IconArrowElbow />
                 <span className="sr-only">Send message</span>

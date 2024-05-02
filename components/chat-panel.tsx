@@ -10,7 +10,7 @@ import { ChatShareDialog } from '@/components/chat-share-dialog'
 import { useAIState, useActions, useUIState } from 'ai/rsc'
 import type { AI } from '@/lib/chat/actions'
 import { nanoid } from 'nanoid'
-import { UserMessage } from './stocks/message'
+import { SpinnerMessage, UserMessage } from './stocks/message'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 
@@ -46,7 +46,7 @@ export function ChatPanel({
       message: sampleProposalDocument
     },
     {
-      heading: 'Proposal Improvement (WIP)',
+      heading: 'Proposal Improvement',
       subheading: 'improves your proposal document based on the evaluation',
       message: 'Something went wrong?'
     }
@@ -75,6 +75,10 @@ export function ChatPanel({
                     {
                       id: nanoid(),
                       display: <UserMessage>{example.message}</UserMessage>
+                    },
+                    {
+                      id: nanoid(),
+                      display: <SpinnerMessage />
                     }
                   ])
 
@@ -86,7 +90,7 @@ export function ChatPanel({
                       )
 
                     setMessages(currentMessages => [
-                      ...currentMessages,
+                      ...currentMessages.slice(0, -1),
                       responseMessage
                     ])
                   } catch {

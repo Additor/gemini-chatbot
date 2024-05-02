@@ -38,6 +38,7 @@ import { nanoid } from 'nanoid'
 import { ImprovementSpinnerMessage, UserMessage } from '../stocks/message'
 import { toast } from 'sonner'
 import { ImprovementParams } from '@/lib/chat/improvement.types'
+import * as React from 'react'
 
 const IMPROVE_MESSAGE = 'Improve the proposal with given settings.'
 const MIN_SCORE = 1
@@ -141,13 +142,22 @@ export function EvaluationResult({
           <UserMessage>
             <b>{IMPROVE_MESSAGE}</b>
             <ul>
-              <li>- Categories: {checkedCategories.join(', ')}</li>
+              <li>
+                - Categories:{' '}
+                {checkedCategories.length
+                  ? checkedCategories.join(', ')
+                  : 'N/A'}
+              </li>
               <li>
                 - Settings: {settings.length ? settings.join(', ') : 'N/A'}
               </li>
             </ul>
           </UserMessage>
         )
+      },
+      {
+        id: nanoid(),
+        display: <ImprovementSpinnerMessage />
       }
     ])
 
@@ -160,7 +170,10 @@ export function EvaluationResult({
         }
       )
 
-      setMessages(currentMessages => [...currentMessages, responseMessage])
+      setMessages(currentMessages => [
+        ...currentMessages.slice(0, -1),
+        responseMessage
+      ])
     } catch (e) {
       toast(
         <div className="text-red-600">
